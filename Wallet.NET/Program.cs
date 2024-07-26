@@ -5,6 +5,7 @@ using MudBlazor.Services;
 using Wallet.NET.Components;
 using Wallet.NET.Components.Account;
 using Wallet.NET.Data;
+using Wallet.NET.Repositories.Stocks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,8 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+builder.Services.AddScoped<IStockRepository, StockRepository>();
 
 builder.Services.AddAuthentication(options =>
     {
