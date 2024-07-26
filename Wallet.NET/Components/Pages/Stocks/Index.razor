@@ -1,0 +1,27 @@
+@page "/stocks"
+@inherits IndexPage
+
+<MudText Typo="Typo.h3">Stocks</MudText>
+
+<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Info" Size="Size.Large"
+  Href="/stocks/create" Class="mt-md-4 mb-4">
+  New Stock
+</MudButton>
+
+<MudDataGrid Items="@Stocks" Filterable="false" SortMode="@SortMode.Single" Groupable="false">
+  <Columns>
+    <PropertyColumn Property="x=>x.Ticker" />
+    <PropertyColumn Property="x=>x.Exchange" />
+    <TemplateColumn>
+      <CellTemplate>
+        <MudStack Row>
+          <MudFab Size="Size.Small" Label="Edit" @onclick="@(()=>GoToUpdate(context.Item.Id))"
+            StartIcon="@Icons.Material.Filled.Edit" Color="Color.Success" />
+
+          <MudFab Size="Size.Small" Label="Delete" @onclick="@(()=>DeleteStock(context.Item))"
+            StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" />
+        </MudStack>
+      </CellTemplate>
+    </TemplateColumn>
+  </Columns>
+</MudDataGrid>

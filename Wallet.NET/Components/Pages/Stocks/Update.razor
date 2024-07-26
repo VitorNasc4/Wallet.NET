@@ -1,0 +1,23 @@
+@page "/stocks/update/{StockId:int}"
+@inherits UpdateStockPage
+
+<MudText Typo="Typo.h3">Stock Update</MudText>
+
+<MudPaper Class="pa-8 mt-4">
+  <EditForm Model="@InputModel" OnValidSubmit="OnValidSubmitAsync">
+    <DataAnnotationsValidator />
+
+    <MudTextField Label="Ticker" Variant="Variant.Outlined" HelperText="Field required" @bind-Value="InputModel.Ticker"
+      For="@(()=>InputModel.Ticker)" />
+
+    <MudTextField Label="Exchange" Variant="Variant.Outlined" HelperText="Field required"
+      @bind-Value="InputModel.Exchange" For="@(()=>InputModel.Exchange)" />
+
+    <MudDivider Class="m-4" />
+
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" Size="Size.Large"
+      ButtonType="ButtonType.Submit">
+      Save
+    </MudButton>
+  </EditForm>
+</MudPaper>
