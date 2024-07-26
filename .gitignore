@@ -1,0 +1,96 @@
+# Build results
+bin/
+obj/
+out/
+publish/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio workspace database
+.vscode/
+.vs/
+.vscode/*
+
+# Rider project files
+.idea/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Log files
+*.log
+
+# Npm package files
+node_modules/
+
+# .NET dependencies
+*.dll
+*.pdb
+*.exe
+*.nuget
+*.localhistory
+*.cache
+*.ide
+
+# JetBrains Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.userprefs
+*.sln.docstates
+
+# Mono Auto Generated Files
+mono_crash.*
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows shortcuts
+*.lnk
+
+# Linux directories
+**/.DS_Store
+
+# OS generated files
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Directory Slips
+.Spotlight-V100
+.Trashes
+
+# Icon?
+Icon?
+__MACOSX
+
+# Apple file system tags
+._*
+
+# Temporary files
+*.swp
+*.swo
+*.swn
