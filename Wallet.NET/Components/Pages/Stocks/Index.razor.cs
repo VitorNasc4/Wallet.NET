@@ -2,6 +2,7 @@
 using MudBlazor;
 using Wallet.NET.Models;
 using Wallet.NET.Repositories.Stocks;
+using Wallet.NET.Services.Stocks;
 
 namespace Wallet.NET.Components.Pages.Stocks
 {
@@ -9,6 +10,9 @@ namespace Wallet.NET.Components.Pages.Stocks
     {
         [Inject]
         public IStockRepository repository { get; set; } = null!;
+
+        [Inject]
+        public IStockService service { get; set; } = null!;
 
         [Inject]
         public IDialogService Dialog { get; set; } = null!;
@@ -19,8 +23,8 @@ namespace Wallet.NET.Components.Pages.Stocks
         [Inject]
         public NavigationManager NavigationManager { get; set; } = null!;
 
-        public List<Stock> Stocks { get; set; } = new List<Stock>();
-        public async Task DeleteStock(Stock stock)
+        public List<StockViewModel> Stocks { get; set; } = new List<StockViewModel>();
+        public async Task DeleteStock(StockViewModel stock)
         {
             try
             {
@@ -35,7 +39,7 @@ namespace Wallet.NET.Components.Pages.Stocks
                 if (result is true)
                 {
                     await repository.DeleteStockAsync(stock.Id);
-                    Snackbar.Add($"Stock {stock} successfully deleted!", Severity.Success);
+                    Snackbar.Add($"Stock {stock.Ticker} successfully deleted!", Severity.Success);
                     await OnInitializedAsync();
                 }
             }
@@ -52,7 +56,30 @@ namespace Wallet.NET.Components.Pages.Stocks
 
         protected override async Task OnInitializedAsync()
         {
-            Stocks = await repository.GetAllStocksAsync();
+            try
+            {
+                var stocks = await repository.GetAllStocksAsync();
+                var stockViewModelList = new List<StockViewModel>();
+                foreach (var stock in stocks)
+                {
+                    var stockDTO = await service.GetStockInfoAsync(stock.Ticker, stock.Exchange);
+                    var stockViewModel = new StockViewModel
+                    {
+                        Id = stock.Id,
+                        Ticker = stock.Ticker,
+                        Exchange = stock.Exchange,
+                        CurrentValue = stockDTO is not null ? stockDTO.CurrentValue.ToString() : "Error on get Current Value",
+                        DailyChange = stockDTO is not null ? stockDTO.DailyChange.ToString() : "Error on get Daily Change",
+                    };
+                    stockViewModelList.Add(stockViewModel);
+                }
+
+                Stocks = stockViewModelList;
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
         }
     }
 }
