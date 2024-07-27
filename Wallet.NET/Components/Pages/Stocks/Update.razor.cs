@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using Wallet.NET.Models;
 using Wallet.NET.Repositories.Stocks;
+using Wallet.NET.Services.Stocks;
 
 namespace Wallet.NET.Components.Pages.Stocks
 {
@@ -17,6 +18,9 @@ namespace Wallet.NET.Components.Pages.Stocks
 
         [Inject]
         public IStockRepository repository { get; set; } = null!;
+
+        [Inject]
+        public IStockService service { get; set; } = null!;
 
         [Inject]
         public ISnackbar Snackbar { get; set; } = null!;
@@ -50,6 +54,18 @@ namespace Wallet.NET.Components.Pages.Stocks
             {
                 if (editContext.Model is StockInputModel model)
                 {
+                    var isValidExchange = Stock.IsValidExchange(model.Exchange);
+                    if (!isValidExchange)
+                    {
+                        throw new Exception("Exchange not valid");
+                    }
+
+                    var isValidStock = await service.IsValidStock(model.Ticker, model.Exchange);
+                    if (!isValidStock)
+                    {
+                        throw new Exception("Ticker not found for this Exchange");
+                    }
+
                     CurrentStock!.Ticker = model.Ticker;
                     CurrentStock.Exchange = model.Exchange;
 
