@@ -12,10 +12,10 @@ namespace Wallet.NET.Components.Pages.Stocks
 
         [Required(ErrorMessage = "Ticker is required")]
         [MaxLength(ErrorMessage = "The maximum length of the ticker is 10 characters.")]
-        public string Ticker { get; set; }
+        public string Ticker { get; set; } = null!;
 
         [Required(ErrorMessage = "Exchange is required")]
         [MaxLength(ErrorMessage = "The maximum length of the exchange is 20 characters.")]
-        public string Exchange { get; set; }
+        public string Exchange { get; set; } = null!;
     }
 }

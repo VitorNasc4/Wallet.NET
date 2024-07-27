@@ -16,11 +16,16 @@
 
             return validExchanges.Contains(exchange.ToUpperInvariant());
         }
+        public static bool IsExchangeValid(string exchange)
+        {
+            var validExchanges = new List<string>() { ExchangeTypes.BOVESPA, ExchangeTypes.NASDAQ };
+            return validExchanges.Contains(exchange.ToUpperInvariant());
+        }
+    }
+    public static class ExchangeTypes
+    {
+        public static string BOVESPA = "BOVESPA";
+        public static string NASDAQ = "NASDAQ";
     }
 }
 
-public static class ExchangeTypes
-{
-    public static string BOVESPA = "BOVESPA";
-    public static string NASDAQ = "NASDAQ";
-}
