@@ -24,6 +24,9 @@ namespace Wallet.NET.Repositories.Stocks
                 throw new ArgumentNullException(nameof(stock));
             }
 
+            stock.Ticker = stock.Ticker.ToUpperInvariant();
+            stock.Exchange = stock.Exchange.ToUpperInvariant();
+
             var existingStock = await _context.Stocks
                 .FirstOrDefaultAsync(s => s.Ticker == stock.Ticker);
 
