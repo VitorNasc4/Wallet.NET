@@ -1,5 +1,7 @@
 @page "/stocks/update/{StockId:int}"
+@using Microsoft.AspNetCore.Authorization
 @inherits UpdateStockPage
+@attribute [Authorize(Roles = "User")]
 
 <MudText Typo="Typo.h3">Stock Update</MudText>
 

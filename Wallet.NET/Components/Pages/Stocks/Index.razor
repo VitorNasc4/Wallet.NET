@@ -17,11 +17,21 @@
     <TemplateColumn>
       <CellTemplate>
         <MudStack Row>
-          <MudFab Size="Size.Small" Label="Edit" @onclick="@(()=>GoToUpdate(context.Item.Id))"
-            StartIcon="@Icons.Material.Filled.Edit" Color="Color.Success" />
+          <MudFab 
+            Size="Size.Small" 
+            Label="Edit" 
+            hidden="@HideButtons"
+            @onclick="@(()=>GoToUpdate(context.Item.Id))"
+            StartIcon="@Icons.Material.Filled.Edit" 
+            Color="Color.Success" />
 
-          <MudFab Size="Size.Small" Label="Delete" @onclick="@(()=>DeleteStock(context.Item))"
-            StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" />
+          <MudFab 
+            Size="Size.Small" 
+            Label="Delete" 
+            hidden="@HideButtons"
+            @onclick="@(()=>DeleteStock(context.Item))"
+            StartIcon="@Icons.Material.Filled.Delete" 
+            Color="Color.Error" />
         </MudStack>
       </CellTemplate>
     </TemplateColumn>
