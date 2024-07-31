@@ -39,7 +39,16 @@ namespace Wallet.NET.Components.Pages.Stocks
 
                 if (result is true)
                 {
-                    await repository.DeleteStockAsync(stock.Id);
+                    var auth = await AuthenticationState;
+                    var user = auth.User;
+                    var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                    if (user.Identity is null || string.IsNullOrEmpty(userId))
+                    {
+                        throw new Exception("User Id not found");
+                    }
+
+                    await service.RemoveStockToUserAsync(userId!, stock.Id);
+                    // await repository.DeleteStockAsync(stock.Id);
                     Snackbar.Add($"Stock {stock.Ticker} successfully deleted!", Severity.Success);
                     await OnInitializedAsync();
                 }
@@ -61,13 +70,20 @@ namespace Wallet.NET.Components.Pages.Stocks
         private Task<AuthenticationState> AuthenticationState { get; set; }
         protected override async Task OnInitializedAsync()
         {
-            var auth = await AuthenticationState;
-
-            HideButtons = !auth.User.IsInRole("User");
-
             try
             {
-                var stocks = await repository.GetAllStocksAsync();
+                var auth = await AuthenticationState;
+
+                HideButtons = !auth.User.IsInRole("User");
+
+                var user = auth.User;
+                var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (user.Identity is null || string.IsNullOrEmpty(userId))
+                {
+                    throw new Exception("User Id not found");
+                }
+                
+                var stocks = await service.GetUserStocksAsync(userId!);
                 var stockViewModelList = new List<StockViewModel>();
                 foreach (var stock in stocks)
                 {

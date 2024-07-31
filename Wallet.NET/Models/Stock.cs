@@ -5,6 +5,8 @@
         public int Id { get; set; }
         public string Ticker { get; set; } = null!;
         public string Exchange { get; set; } = null!;
+        public ICollection<UserStock> UserStocks { get; set; } = new List<UserStock>();
+
         public static bool IsValidExchange(string exchange)
         {
             if (string.IsNullOrEmpty(exchange))

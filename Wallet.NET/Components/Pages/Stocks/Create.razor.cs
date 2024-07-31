@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using Wallet.NET.Models;
@@ -22,6 +23,9 @@ namespace Wallet.NET.Components.Pages.Stocks
         public NavigationManager NavigationManager { get; set; } = null!;
 
         public StockInputModel InputModel { get; set; } = new StockInputModel();
+        [CascadingParameter]
+        private Task<AuthenticationState> AuthenticationState { get; set; }
+
 
         public async Task OnValidSubmitAsync(EditContext editContext)
         {
@@ -29,25 +33,28 @@ namespace Wallet.NET.Components.Pages.Stocks
             {
                 if (editContext.Model is StockInputModel model)
                 {
-                    var isValidExchange = Stock.IsValidExchange(model.Exchange);
-                    if (!isValidExchange)
-                    {
-                        throw new Exception("Exchange not valid");
-                    }
-
-                    var isValidStock = await service.IsValidStock(model.Ticker, model.Exchange);
-                    if (!isValidStock)
-                    {
-                        throw new Exception("Ticker not found for this Exchange");
-                    }
-
-                    var stock = new Stock
+                    var newStock = new Stock
                     {
                         Ticker = model.Ticker,
                         Exchange = model.Exchange
                     };
 
-                    await repository.CreateStockAsync(stock);
+                    var stock = await service.ValidateAndCreateStockAsync(newStock);
+
+                    if (stock is null)
+                    {
+                        throw new Exception("There was a problem during the stock registration");
+                    }
+
+                    var auth = await AuthenticationState;
+                    var user = auth.User;
+                    var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                    if (user.Identity is null || string.IsNullOrEmpty(userId))
+                    {
+                        throw new Exception("User Id not found");
+                    
+                    }
+                    await service.AddStockToUserAsync(userId!, stock.Id);
 
                     Snackbar.Add("Stock successfully registered", Severity.Success);
                     NavigationManager.NavigateTo("/stocks");

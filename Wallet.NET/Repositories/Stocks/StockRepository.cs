@@ -62,6 +62,11 @@ namespace Wallet.NET.Repositories.Stocks
             return await _context.Stocks.Where(s => s.Id == stockId).FirstOrDefaultAsync();
         }
 
+        public async Task<Stock?> GetStocksByTickerAsync(string ticker)
+        {
+            return await _context.Stocks
+                .FirstOrDefaultAsync(s => s.Ticker == ticker.ToUpperInvariant());
+        }
         public async Task<List<Stock>> GetStocksBySearchTermAsync(string query)
         {
             if (string.IsNullOrEmpty(query))
@@ -96,6 +101,37 @@ namespace Wallet.NET.Repositories.Stocks
 
             _context.Stocks.Update(existingStock);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task AddStockToUserAsync(string userId, int stockId)
+        {
+            var userStock = new UserStock
+            {
+                UserId = userId,
+                StockId = stockId
+            };
+
+            _context.UserStocks.Add(userStock);
+            await _context.SaveChangesAsync();
+        }
+        public async Task RemoveStockTFromUserAsync(string userId, int stockId)
+        {
+            var userStock = await _context.UserStocks
+                .FirstOrDefaultAsync(us => us.UserId == userId && us.StockId == stockId);
+
+            if (userStock is null)
+            {
+                return;
+            }
+            _context.UserStocks.Remove(userStock);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<List<Stock>> GetUserStocksAsync(string userId)
+        {
+            return await _context.UserStocks
+                .Where(us => us.UserId == userId)
+                .Select(us => us.Stock)
+                .ToListAsync();
         }
     }
 }

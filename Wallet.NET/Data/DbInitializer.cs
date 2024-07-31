@@ -35,7 +35,6 @@ namespace Wallet.NET.Data
                 new User
                 {
                     Id = "7c1656d0-c5fa-499a-9c41-bdc2bdefc198",
-                    Name = "Vitor Marciano",
                     Email = "vitornascimento321@hotmail.com",
                     EmailConfirmed = true,
                     UserName = "vitornascimento321@hotmail.com",

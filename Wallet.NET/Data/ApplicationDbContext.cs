@@ -8,6 +8,7 @@ namespace Wallet.NET.Data
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
         public DbSet<Stock> Stocks { get; set; }
+        public DbSet<UserStock> UserStocks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
