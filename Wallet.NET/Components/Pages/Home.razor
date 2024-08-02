@@ -1,58 +1,99 @@
 ﻿@page "/"
+@using Wallet.NET.Models
+@using Wallet.NET.Services.Indices
+@using Wallet.NET.Services.News
+
+@inject IIndexService IndexService
+@inject INewsService NewsService
 
 <PageTitle>Home</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor and the .NET 8 Template!</MudText>
+<MudText Typo="Typo.h3" GutterBottom="true">Bem-vindo ao Wallet.NET</MudText>
+<MudText Class="mb-8">Gerencie suas ações e mantenha-se atualizado com as últimas notícias do mercado.</MudText>
 
-<MudAlert Severity="Severity.Normal">
-    You can find documentation and examples on our website here:
-    <MudLink Href="https://mudblazor.com" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        <b>www.mudblazor.com</b>
-    </MudLink>
-</MudAlert>
+<MudText Typo="Typo.h5" GutterBottom="true">Principais Índices</MudText>
+@if (!string.IsNullOrEmpty(IndicesErrorMessage))
+{
+    <MudAlert Severity="Severity.Error">@IndicesErrorMessage</MudAlert>
+}
+else
+{
+    <MudList T="IndexInfo">
+        @if (indices != null)
+        {
+            foreach (var index in indices)
+            {
+                <MudListItem T="IndexInfo">
+                    <MudText Typo="Typo.body1">@index.Name: @index.Value (@index.DailyChange)</MudText>
+                </MudListItem>
+            }
+        }
+        else
+        {
+            <MudText>Carregando índices...</MudText>
+        }
+    </MudList>
+}
 
-<br />
-<MudText Typo="Typo.h5" GutterBottom="true">Interactivity in this Template</MudText>
-<br />
-<MudText Typo="Typo.body2">
-    When you opt for the "Global" Interactivity Location, <br />
-    the render modes are defined in App.razor and consequently apply to all child components.<br />
-    In this case, providers are globally set in the MainLayout.<br />
-    <br />
-    On the other hand, if you choose the "Per page/component" Interactivity Location,<br />
-    it is necessary to include the <br />
-    <br />
-    &lt;MudPopoverProvider /&gt; <br />
-    &lt;MudDialogProvider /&gt; <br />
-    &lt;MudSnackbarProvider /&gt; <br />
-    <br />
-    components on every interactive page.<br />
-    <br />
-    If a render mode is not specified for a page, it defaults to Server-Side Rendering (SSR),<br />
-    similar to this page. While MudBlazor allows pages to be rendered in SSR,<br />
-    please note that interactive features, such as buttons and dropdown menus, will not be functional.
-</MudText>
+<MudDivider />
 
-<br />
-<MudText Typo="Typo.h5" GutterBottom="true">What's New in Blazor with the Release of .NET 8</MudText>
-<br />
-<MudText Typo="Typo.h6" GutterBottom="true">Prerendering</MudText>
-<MudText Typo="Typo.body2" GutterBottom="true">
-    If you're exploring the features of .NET 8 Blazor,<br /> you might be pleasantly surprised to learn that each page is prerendered on the server,<br /> regardless of the selected render mode.<br /><br />
-    This means that you'll need to inject all necessary services on the server,<br /> even when opting for the wasm (WebAssembly) render mode.<br /><br />
-    This prerendering functionality is crucial to ensuring that WebAssembly mode feels fast and responsive,<br /> especially when it comes to initial page load times.<br /><br />
-    For more information on how to detect prerendering and leverage the RenderContext, you can refer to the following link:
-    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issuecomment-1783568121" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        More details
-    </MudLink>
-</MudText>
+<MudText Typo="Typo.h5" GutterBottom="true">Principais Notícias</MudText>
+@if (!string.IsNullOrEmpty(NewsErrorMessage))
+{
+    <MudAlert Severity="Severity.Error">@NewsErrorMessage</MudAlert>
+}
+else
+{
+    <MudList T="NewsArticle">
+        @if (newsArticles != null)
+        {
+            foreach (var article in newsArticles)
+            {
+                <MudListItem T="NewsArticle">
+                    <MudText Typo="Typo.body1"><MudLink Href="@article.Link" Target="_blank">@article.Title</MudLink></MudText>
+                </MudListItem>
+            }
+        }
+        else
+        {
+            <MudText>Carregando notícias...</MudText>
+        }
+    </MudList>
+}
 
-<br />
-<MudText Typo="Typo.h6" GutterBottom="true">InteractiveAuto</MudText>
-<MudText Typo="Typo.body2">
-    A discussion on how to achieve this can be found here:
-    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issue-1950424116" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        More details
-    </MudLink>
-</MudText>
+@code {
+    private List<IndexInfo>? indices;
+    private List<NewsArticle>? newsArticles;
+    private string? IndicesErrorMessage;
+    private string? NewsErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadIndicesAsync();
+        await LoadNewsAsync();
+    }
+
+    private async Task LoadIndicesAsync()
+    {
+        try
+        {
+            indices = await IndexService.GetIndicesInfoAsync();
+        }
+        catch (Exception ex)
+        {
+            IndicesErrorMessage = "Erro ao carregar índices: " + ex.Message;
+        }
+    }
+
+    private async Task LoadNewsAsync()
+    {
+        try
+        {
+            newsArticles = await NewsService.GetAllNewsArticlesAsync();
+        }
+        catch (Exception ex)
+        {
+            NewsErrorMessage = "Erro ao carregar notícias: " + ex.Message;
+        }
+    }
+}
