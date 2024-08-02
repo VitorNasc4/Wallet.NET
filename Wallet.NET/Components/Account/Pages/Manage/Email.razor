@@ -16,7 +16,16 @@
 
 <MudText Typo="Typo.h6" GutterBottom="true">Manage email</MudText>
 
-<StatusMessage Message="@message" />
+@* <StatusMessage Message="@message" /> *@
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <MudAlert Severity="Severity.Success">@successMessage</MudAlert>
+}
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
+}
 
 <form @onsubmit="OnSendEmailVerificationAsync" @formname="send-verification" id="send-verification-form" method="post">
     <AntiforgeryToken />
@@ -26,7 +35,7 @@
 
     <MudGrid>
 
-        @if (isEmailConfirmed)
+        @* @if (isEmailConfirmed)
         {
             <MudItem md="12">
                 <MudStaticTextField Value="@email" Label="Email" Placeholder="Please enter your email." Disabled="true" AdornmentIcon="Icons.Material.Filled.Check" AdornmentColor="Color.Success" />
@@ -40,7 +49,7 @@
             <MudItem md="12">
                 <MudStaticButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" FormAction="FormAction.Submit">Send verification email</MudStaticButton>
             </MudItem>
-        }
+        } *@
 
         <MudItem md="12">
             <MudStaticTextField @bind-Value="@Input.NewEmail" For="@(() => Input.NewEmail)" Label="New Email" HelperText="Please enter new email." />
@@ -53,7 +62,9 @@
 </EditForm>
 
 @code {
-    private string? message;
+    @* private string? message; *@
+    private string? successMessage;
+    private string? errorMessage;
     private ApplicationUser user = default!;
     private string? email;
     private bool isEmailConfirmed;
@@ -73,7 +84,7 @@
         Input.NewEmail ??= email;
     }
 
-    private async Task OnValidSubmitAsync()
+    @* private async Task OnValidSubmitAsync()
     {
         if (Input.NewEmail is null || Input.NewEmail == email)
         {
@@ -91,6 +102,32 @@
         await EmailSender.SendConfirmationLinkAsync(user, Input.NewEmail, HtmlEncoder.Default.Encode(callbackUrl));
 
         message = "Confirmation link to change email sent. Please check your email.";
+    } *@
+    private async Task OnValidSubmitAsync()
+    {
+        if (Input.NewEmail is null || Input.NewEmail == email)
+        {
+            errorMessage = "Your email is unchanged.";
+            return;
+        }
+
+        var existingUser = await UserManager.FindByEmailAsync(Input.NewEmail);
+        if (existingUser != null)
+        {
+            errorMessage = "This email is already registered.";
+            return;
+        }
+
+        var result = await UserManager.SetEmailAsync(user, Input.NewEmail);
+        if (result.Succeeded)
+        {
+            await UserManager.UpdateNormalizedEmailAsync(user);
+            successMessage = "Email has been changed successfully.";
+        }
+        else
+        {
+            errorMessage = "Error changing email.";
+        }
     }
 
     private async Task OnSendEmailVerificationAsync()
@@ -109,7 +146,8 @@
 
         await EmailSender.SendConfirmationLinkAsync(user, email, HtmlEncoder.Default.Encode(callbackUrl));
 
-        message = "Verification email sent. Please check your email.";
+        @* message = "Verification email sent. Please check your email."; *@
+        successMessage = "Verification email sent. Please check your email.";
     }
 
     private sealed class InputModel
