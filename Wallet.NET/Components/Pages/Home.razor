@@ -172,7 +172,7 @@
     {
         try
         {
-            newsArticles = await NewsService.GetAllNewsArticlesAsync();
+            newsArticles = await NewsService.GetAllNewsArticlesWithCacheAsync();
         }
         catch (Exception ex)
         {

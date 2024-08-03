@@ -4,12 +4,19 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using Microsoft.Extensions.Caching.Memory;
 using Wallet.NET.Models;
 
 namespace Wallet.NET.Services.News
 {
     public class NewsService : INewsService
     {
+        private readonly IMemoryCache _cache;
+
+        public NewsService(IMemoryCache cache)
+        {
+            _cache = cache;
+        }
         public async Task<List<NewsArticle>?> GetAllNewsArticlesAsync()
         {
             var url = "https://www.google.com/finance/?hl=en";
@@ -18,7 +25,7 @@ namespace Wallet.NET.Services.News
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
             var response = await client.GetStringAsync(url);
 
-            await Task.Delay(1000);
+            await Task.Delay(3000);
 
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(response);
@@ -63,6 +70,30 @@ namespace Wallet.NET.Services.News
                 throw new Exception("Could not get News informations");
             }
 
+            return newsList;
+        }
+
+        public async Task<List<NewsArticle>?> GetAllNewsArticlesWithCacheAsync()
+        {
+
+            var cacheKey = "googleFinanceNews";
+            
+            if (!_cache.TryGetValue(cacheKey, out List<NewsArticle>? newsList))
+            {
+                newsList = await GetAllNewsArticlesAsync();
+
+                if (newsList is null || newsList.Count == 0)
+                {
+                    throw new Exception("Could not get News informations");
+                }
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(12)
+                };
+
+                _cache.Set(cacheKey, newsList, cacheEntryOptions);
+            }
             return newsList;
         }
 

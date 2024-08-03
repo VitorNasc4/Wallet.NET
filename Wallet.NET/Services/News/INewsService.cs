@@ -9,5 +9,6 @@ namespace Wallet.NET.Services.News
     public interface INewsService
     {
         Task<List<NewsArticle>?> GetAllNewsArticlesAsync();
+        Task<List<NewsArticle>?> GetAllNewsArticlesWithCacheAsync();
     }
 }

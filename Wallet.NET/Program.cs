@@ -24,6 +24,7 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
+builder.Services.AddMemoryCache();;
 builder.Services.AddScoped<IIndexService, IndexService>();
 builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddScoped<IStockService, StockService>();
