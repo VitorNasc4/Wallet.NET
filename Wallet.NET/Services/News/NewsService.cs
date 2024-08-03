@@ -15,7 +15,10 @@ namespace Wallet.NET.Services.News
             var url = "https://www.google.com/finance/?hl=en";
 
             HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
             var response = await client.GetStringAsync(url);
+
+            await Task.Delay(1000);
 
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(response);
@@ -26,18 +29,19 @@ namespace Wallet.NET.Services.News
             {
                 throw new Exception("Could not get News Nodes");
             }
-        
+
             var newsList = new List<NewsArticle>();
 
             foreach (var node in newsNodes)
             {
-
                 var newsTittleNode = node.SelectSingleNode(".//div[@class='Yfwt5']");
                 var newsTittle = newsTittleNode != null ? WebUtility.HtmlDecode(newsTittleNode.InnerText.Trim()) : string.Empty;
 
                 var newsLinkNode = node.SelectSingleNode(".//div[1]//div[1]//a");
                 var newsLink = newsLinkNode != null ? newsLinkNode.GetAttributeValue("href", string.Empty) : string.Empty;
 
+                var fontNode = node.SelectSingleNode(".//div[@class='sfyJob']");
+                var font = fontNode != null ? WebUtility.HtmlDecode(fontNode.InnerText.Trim()) : string.Empty;
 
                 if (string.IsNullOrEmpty(newsTittle) || string.IsNullOrEmpty(newsLink))
                 {
@@ -47,18 +51,20 @@ namespace Wallet.NET.Services.News
                 var news = new NewsArticle
                 {
                     Title = newsTittle,
+                    Font = font is not null ? font : "",
                     Link = newsLink,
                 };
 
                 newsList.Add(news);
             }
 
-            if(newsList.Count == 0)
+            if (newsList.Count == 0)
             {
                 throw new Exception("Could not get News informations");
             }
 
             return newsList;
         }
+
     }
 }

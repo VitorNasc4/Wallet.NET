@@ -49,18 +49,26 @@ namespace Wallet.NET.Services.Stocks
                     return null;
                 }
 
-                var priceString = priceNode.InnerText;
-                var priceDecimal = ParseStringToDecimal(priceString, exchange);
+                var currentPriceString = priceNode.InnerText;
+                var currentPriceDecimal = ParseStringToDecimal(currentPriceString, exchange);
 
                 var openingPriceString = openingPriceNode.InnerText;
                 var openingPriceDecimal = ParseStringToDecimal(openingPriceString, exchange);
 
-                var dailyChange = priceDecimal - openingPriceDecimal;
+                var dailyChange = currentPriceDecimal - openingPriceDecimal;
+
+                var currency = exchange == ExchangeTypes.BOVESPA ? "R$" : "$";
+
+                openingPriceString = currency + openingPriceDecimal.ToString();
+                currentPriceString = currency + currentPriceDecimal.ToString();
+                var variation = (dailyChange * 100 / currentPriceDecimal).ToString("F2") + "%";
 
                 return new StockInfoDTO
                 {
-                    CurrentValue = priceDecimal,
-                    DailyChange = dailyChange
+                    OpeningValue = openingPriceString,
+                    CurrentValue = currentPriceString,
+                    DailyChange = dailyChange,
+                    Variation = variation
                 };
 
             }

@@ -4,72 +4,137 @@
 @using Wallet.NET.Services.News
 
 @inject IIndexService IndexService
+@inject ICryptoService CryptoService
 @inject INewsService NewsService
 
 <PageTitle>Home</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Bem-vindo ao Wallet.NET</MudText>
-<MudText Class="mb-8">Gerencie suas ações e mantenha-se atualizado com as últimas notícias do mercado.</MudText>
+<MudText Class="d-flex justify-center" Typo="Typo.h3" GutterBottom="true">Welcome to Wallet.NET</MudText>
+<MudText Class="d-flex justify-center mb-8">Manage your stocks and stay updated with the latest market news.</MudText>
+    
 
-<MudText Typo="Typo.h5" GutterBottom="true">Principais Índices</MudText>
-@if (!string.IsNullOrEmpty(IndicesErrorMessage))
-{
-    <MudAlert Severity="Severity.Error">@IndicesErrorMessage</MudAlert>
-}
-else
-{
-    <MudList T="IndexInfo">
-        @if (indices != null)
+<MudGrid>
+    <MudItem xs="12" md="6">
+        <MudText Typo="Typo.h5" GutterBottom="true">Top Indices</MudText>
+        @if (!string.IsNullOrEmpty(IndicesErrorMessage))
         {
-            foreach (var index in indices)
-            {
-                <MudListItem T="IndexInfo">
-                    <MudText Typo="Typo.body1">@index.Name: @index.Value (@index.DailyChange)</MudText>
-                </MudListItem>
-            }
+            <MudAlert Severity="Severity.Error">@IndicesErrorMessage</MudAlert>
         }
         else
         {
-            <MudText>Carregando índices...</MudText>
-        }
-    </MudList>
-}
-
-<MudDivider />
-
-<MudText Typo="Typo.h5" GutterBottom="true">Principais Notícias</MudText>
-@if (!string.IsNullOrEmpty(NewsErrorMessage))
-{
-    <MudAlert Severity="Severity.Error">@NewsErrorMessage</MudAlert>
-}
-else
-{
-    <MudList T="NewsArticle">
-        @if (newsArticles != null)
-        {
-            foreach (var article in newsArticles)
+            @if (indices == null)
             {
-                <MudListItem T="NewsArticle">
-                    <MudText Typo="Typo.body1"><MudLink Href="@article.Link" Target="_blank">@article.Title</MudLink></MudText>
-                </MudListItem>
+                <MudText>Loading indices...</MudText>
             }
+            else
+            {
+                <MudTable Items="indices">
+                    <HeaderContent>
+                        <MudTh>Name</MudTh>
+                        <MudTh>Value</MudTh>
+                        <MudTh>Daily Change</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Name">@context.Name</MudTd>
+                        <MudTd DataLabel="Value">@context.Value</MudTd>
+                        <MudTd DataLabel="Daily Change">
+                            <span style="color:@(GetColor(context.DailyChange))">
+                                @context.DailyChange
+                            </span>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+        }
+    </MudItem>
+
+    <MudItem xs="12" md="6">
+        <MudText Typo="Typo.h5" GutterBottom="true">Top Cryptos</MudText>
+        @if (!string.IsNullOrEmpty(CryptosErrorMessage))
+        {
+            <MudAlert Severity="Severity.Error">@CryptosErrorMessage</MudAlert>
         }
         else
         {
-            <MudText>Carregando notícias...</MudText>
+            @if (cryptos == null)
+            {
+                <MudText>Loading cryptos...</MudText>
+            }
+            else
+            {
+                <MudTable Items="cryptos">
+                    <HeaderContent>
+                        <MudTh>Name</MudTh>
+                        <MudTh>Value</MudTh>
+                        <MudTh>Daily Change</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Name">@context.Name</MudTd>
+                        <MudTd DataLabel="Value">@context.Value</MudTd>
+                        <MudTd DataLabel="Daily Change">
+                            <span style="color:@(GetColor(context.DailyChange))">
+                                @context.DailyChange
+                            </span>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
         }
-    </MudList>
-}
+    </MudItem>
+</MudGrid>
+
+<MudItem class="mt-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Top News</MudText>
+    @if (!string.IsNullOrEmpty(NewsErrorMessage))
+    {
+        <MudAlert Severity="Severity.Error">@NewsErrorMessage</MudAlert>
+    }
+    else
+    {
+        @if (newsArticles == null)
+        {
+            <MudText>Loading news...</MudText>
+        }
+        else
+        {
+            <MudGrid>
+                @foreach (var article in newsArticles)
+                {
+                    <MudItem xs="12" md="12">
+                        <MudCard class="mb-4">
+                            <MudCardContent>
+                                <MudText Typo="Typo.body1" GutterBottom="true">
+                                    @article.Title
+                                </MudText>
+                                <MudText Typo="Typo.body2" Style="font-weight: bold;">
+                                    @article.Font
+                                </MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@article.Link" Target="_blank">
+                                    Read more
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    }
+</MudItem>
 
 @code {
     private List<IndexInfo>? indices;
+    private List<Crypto>? cryptos;
     private List<NewsArticle>? newsArticles;
     private string? IndicesErrorMessage;
+    private string? CryptosErrorMessage;
     private string? NewsErrorMessage;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadIndicesAsync();
+        await LoadCryptosAsync();
         await LoadNewsAsync();
     }
 
@@ -81,7 +146,25 @@ else
         }
         catch (Exception ex)
         {
-            IndicesErrorMessage = "Erro ao carregar índices: " + ex.Message;
+            Console.WriteLine("Error loading indices: " + ex.Message);
+            IndicesErrorMessage = "Error loading indices";
+        }
+    }
+
+    private async Task LoadCryptosAsync()
+    {
+        try
+        {
+            cryptos = await CryptoService.GetCryptoInfoAsync();
+            if (cryptos is null) 
+            {
+                CryptosErrorMessage = "Error loading cryptos";
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error loading cryptos: " + ex.Message);
+            CryptosErrorMessage = "Error loading cryptos";
         }
     }
 
@@ -93,7 +176,17 @@ else
         }
         catch (Exception ex)
         {
-            NewsErrorMessage = "Erro ao carregar notícias: " + ex.Message;
+            Console.WriteLine("Error loading news: " + ex.Message);
+            NewsErrorMessage = "Error loading news";
         }
+    }
+
+    private string GetColor(string change)
+    {
+        if (change.StartsWith("-"))
+        {
+            return "red";
+        }
+        return "green";
     }
 }
