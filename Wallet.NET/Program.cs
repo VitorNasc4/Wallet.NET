@@ -27,6 +27,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 builder.Services.AddScoped<IIndexService, IndexService>();
 builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddScoped<IStockService, StockService>();
+builder.Services.AddScoped<ICryptoService, CryptoService>();
 builder.Services.AddScoped<IStockRepository, StockRepository>();
 
 builder.Services.AddAuthentication(options =>
