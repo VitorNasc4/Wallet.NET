@@ -93,8 +93,10 @@ namespace Wallet.NET.Components.Pages.Stocks
                         Id = stock.Id,
                         Ticker = stock.Ticker,
                         Exchange = stock.Exchange,
-                        CurrentValue = stockDTO is not null ? stockDTO.CurrentValue.ToString() : "Error on get Current Value",
+                        OpeningValue = stockDTO is not null && !string.IsNullOrEmpty(stockDTO.OpeningValue) ? stockDTO.OpeningValue : "Error on get Opening Value",
+                        CurrentValue = stockDTO is not null && !string.IsNullOrEmpty(stockDTO.CurrentValue) ? stockDTO.CurrentValue : "Error on get Current Value",
                         DailyChange = stockDTO is not null ? stockDTO.DailyChange.ToString() : "Error on get Daily Change",
+                        Variation = stockDTO is not null && !string.IsNullOrEmpty(stockDTO.Variation) ? stockDTO.Variation : "Error on get Variation",
                     };
                     stockViewModelList.Add(stockViewModel);
                 }
@@ -105,6 +107,15 @@ namespace Wallet.NET.Components.Pages.Stocks
             {
                 Snackbar.Add(ex.Message, Severity.Error);
             }
+        }
+
+        public string GetColor(string variation)
+        {
+            if (variation.StartsWith("-"))
+            {
+                return "red";
+            }
+            return "green";
         }
     }
 }

@@ -10,10 +10,21 @@
 
 <MudDataGrid Items="@Stocks" Filterable="false" SortMode="@SortMode.Single" Groupable="false">
   <Columns>
-    <PropertyColumn Property="x=>x.Ticker" />
-    <PropertyColumn Property="x=>x.Exchange" />
-    <PropertyColumn Property="x=>x.CurrentValue" />
-    <PropertyColumn Property="x=>x.DailyChange" />
+    <PropertyColumn Property="x=>x.Exchange" Title="Exchange"/>
+    <PropertyColumn Property="x=>x.Ticker" Title="Ticker"/>
+    <PropertyColumn Property="x=>x.OpeningValue" Title="Opening Value" />
+    <PropertyColumn Property="x=>x.CurrentValue" Title="Current Value"/>
+    <PropertyColumn Property="x=>x.Variation" Title="Variation">
+       <CellTemplate>
+        @if (context is MudBlazor.CellContext<StockViewModel> cellContext)
+        {
+          var stock = cellContext.Item;
+          <span style="color:@(GetColor(stock.Variation))">
+              @stock.Variation
+          </span>
+        }
+        </CellTemplate>
+    </PropertyColumn>
     <TemplateColumn>
       <CellTemplate>
         <MudStack Row>

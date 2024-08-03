@@ -7,7 +7,9 @@ namespace Wallet.NET.DTOs
 {
     public class StockInfoDTO
     {
-        public decimal CurrentValue { get; set; }
+        public string? OpeningValue { get; set; }
+        public string? CurrentValue { get; set; }
         public decimal DailyChange { get; set; }
+        public string? Variation { get; set; }
     }
 }

@@ -10,7 +10,9 @@ namespace Wallet.NET.Components.Pages.Stocks
         public int Id { get; set; }
         public string Ticker { get; set; } = null!;
         public string Exchange { get; set; } = null!;
+        public string OpeningValue { get; set; } = null!;
         public string CurrentValue { get; set; } = null!;
         public string DailyChange { get; set; } = null!;
+        public string Variation { get; set; } = null!;
     }
 }
