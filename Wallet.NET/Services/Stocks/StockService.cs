@@ -139,6 +139,8 @@ namespace Wallet.NET.Services.Stocks
 
             var options = new ChromeOptions();
             options.AddArgument("headless");
+            options.AddArgument("--log-level=3"); 
+            options.SetLoggingPreference(LogType.Browser, OpenQA.Selenium.LogLevel.Off);
             string? variation = null;
             using (var driver = new ChromeDriver(options))
             {
