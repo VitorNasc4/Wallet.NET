@@ -15,5 +15,6 @@ namespace Wallet.NET.Services.Stocks
         Task AddStockToUserAsync(string userId, int stockId);
         Task RemoveStockToUserAsync(string userId, int stockId);
         Task<List<Stock>> GetUserStocksAsync(string userId);
+        Task<StockReportPriceInfoDTO?> GetStockPriceInfoAsync(Stock stock);
     }
 }

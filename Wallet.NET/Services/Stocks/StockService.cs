@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using Wallet.NET.DTOs;
 using Wallet.NET.Models;
 using Wallet.NET.Repositories.Stocks;
@@ -126,6 +128,57 @@ namespace Wallet.NET.Services.Stocks
             return existingStock;
         }
 
+        public async Task<StockReportPriceInfoDTO?> GetStockPriceInfoAsync(Stock stock)
+        {
+            string url = stock.Exchange switch
+            {
+                "BOVESPA" => $"https://www.google.com/finance/quote/{stock.Ticker}:BVMF?window=5D",
+                "NASDAQ" => $"https://www.google.com/finance/quote/{stock.Ticker}:NASDAQ?window=5D",
+                _ => throw new ArgumentException("Invalid market")
+            };
+
+            var options = new ChromeOptions();
+            options.AddArgument("headless");
+            string? variation = null;
+            using (var driver = new ChromeDriver(options))
+            {
+                driver.Navigate().GoToUrl(url);
+                var variationElement = driver.FindElement(By.XPath("//div[contains(@class,'ln0Gqe')]//div[2]//div[1]//span[2]"));
+
+                if (variationElement == null)
+                {
+                    Console.WriteLine($"Error on get Previous Price from {stock.Ticker}");
+                    return null;
+                }
+                variation = variationElement.Text;
+                var priceParts = variation.Split(' ');
+                if (priceParts.Length > 0)
+                {
+                    variation = priceParts[0];
+                }
+            }
+
+
+            var stockInfo = await GetStockInfoAsync(stock.Ticker, stock.Exchange);
+            if (stockInfo is null)
+            {
+                Console.WriteLine($"Error on get Current Price from {stock.Ticker}");
+                return null;
+            }
+
+
+            if (string.IsNullOrEmpty(variation) || string.IsNullOrEmpty(stockInfo.CurrentValue))
+            {
+                Console.WriteLine($"Error on get price informations from {stock.Ticker}");
+                return null;
+            }
+
+            return new StockReportPriceInfoDTO
+            {
+                Variation = variation,
+                CurrentPrice = stockInfo.CurrentValue,
+            };
+        }
         private decimal ParseStringToDecimal(string price, string exchange)
         {
             string country = exchange switch
@@ -155,5 +208,6 @@ namespace Wallet.NET.Services.Stocks
 
             return priceDecimal;
         }
+
     }
 }
