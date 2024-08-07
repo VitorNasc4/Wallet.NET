@@ -1,0 +1,45 @@
+version: '3.5'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:latest
+    container_name: sqlserver
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=1q2w3e4r@#$
+      - MSSQL_PID=Express
+    ports:
+      - "1434:1433"
+    volumes:
+      - sqlserver:/var/opt/mssql
+    healthcheck:
+      test: [ "CMD-SHELL", "exit 0" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis:
+    image: redis
+    container_name: redis
+    environment:
+      - REDIS_PASSWORD=teste
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "-h",
+          "localhost",
+          "-a",
+          "teste",
+          "ping"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  sqlserver:
