@@ -67,7 +67,7 @@ namespace Wallet.NET.Components.Pages.Stocks
         public bool HideButtons { get; set; } = false;
 
         [CascadingParameter]
-        private Task<AuthenticationState> AuthenticationState { get; set; }
+        private Task<AuthenticationState> AuthenticationState { get; set; } =null!;
         protected override async Task OnInitializedAsync()
         {
             try

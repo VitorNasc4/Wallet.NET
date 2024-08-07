@@ -24,7 +24,7 @@ namespace Wallet.NET.Components.Pages.Stocks
 
         public StockInputModel InputModel { get; set; } = new StockInputModel();
         [CascadingParameter]
-        private Task<AuthenticationState> AuthenticationState { get; set; }
+        private Task<AuthenticationState> AuthenticationState { get; set; } =null!;
 
 
         public async Task OnValidSubmitAsync(EditContext editContext)

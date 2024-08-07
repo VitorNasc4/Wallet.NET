@@ -40,7 +40,7 @@ namespace Wallet.NET.Data
                     UserName = "vitornascimento321@hotmail.com",
                     NormalizedEmail = "VITORNASCIMENTO321@HOTMAIL.COM",
                     NormalizedUserName = "VITORNASCIMENTO321@HOTMAIL.COM",
-                    PasswordHash = hasher.HashPassword(null, "teste@123")
+                    PasswordHash = hasher.HashPassword(null!, "teste@123")
                 }
             );
 

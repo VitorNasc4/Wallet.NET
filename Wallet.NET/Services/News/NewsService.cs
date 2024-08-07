@@ -29,6 +29,7 @@ namespace Wallet.NET.Services.News
 
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(response);
+            await Task.Delay(1000);
 
             var newsNodes = htmlDocument.DocumentNode.SelectNodes("//div[contains(@class,'yY3Lee')]");
 
