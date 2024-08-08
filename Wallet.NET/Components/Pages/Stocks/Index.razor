@@ -8,35 +8,42 @@
   New Stock
 </MudButton>
 
-<MudDataGrid Items="@Stocks" Filterable="false" SortMode="@SortMode.Single" Groupable="false">
-  <Columns>
-    <PropertyColumn Property="x=>x.Exchange" Title="Exchange"/>
-    <PropertyColumn Property="x=>x.Ticker" Title="Ticker"/>
-    <PropertyColumn Property="x=>x.OpeningValue" Title="Opening Value" />
-    <PropertyColumn Property="x=>x.CurrentValue" Title="Current Value"/>
-    <PropertyColumn Property="x=>x.Variation" Title="Variation">
-       <CellTemplate>
-        @if (context is MudBlazor.CellContext<StockViewModel> cellContext)
-        {
-          var stock = cellContext.Item;
-          <span style="color:@(GetColor(stock.Variation))">
-              @stock.Variation
-          </span>
-        }
-        </CellTemplate>
-    </PropertyColumn>
-    <TemplateColumn>
-      <CellTemplate>
-        <MudStack Row>
-          <MudFab 
-            Size="Size.Small" 
-            Label="Delete" 
-            hidden="@HideButtons"
-            @onclick="@(()=>DeleteStock(context.Item))"
-            StartIcon="@Icons.Material.Filled.Delete" 
-            Color="Color.Error" />
-        </MudStack>
-      </CellTemplate>
-    </TemplateColumn>
-  </Columns>
-</MudDataGrid>
+@if (@IsLoading)
+{
+    <MudText>Loading stocks...</MudText>
+}
+else
+{
+    <MudDataGrid Items="@Stocks" Filterable="false" SortMode="@SortMode.Single" Groupable="false">
+        <Columns>
+            <PropertyColumn Property="x=>x.Exchange" Title="Exchange"/>
+            <PropertyColumn Property="x=>x.Ticker" Title="Ticker"/>
+            <PropertyColumn Property="x=>x.OpeningValue" Title="Opening Value" />
+            <PropertyColumn Property="x=>x.CurrentValue" Title="Current Value"/>
+            <PropertyColumn Property="x=>x.Variation" Title="Variation">
+                <CellTemplate>
+                @if (context is MudBlazor.CellContext<StockViewModel> cellContext)
+                {
+                    var stock = cellContext.Item;
+                    <span style="color:@(GetColor(stock.Variation))">
+                        @stock.Variation
+                    </span>
+                }
+                </CellTemplate>
+            </PropertyColumn>
+            <TemplateColumn>
+                <CellTemplate>
+                    <MudStack Row>
+                        <MudFab 
+                            Size="Size.Small" 
+                            Label="Delete" 
+                            hidden="@HideButtons"
+                            @onclick="@(()=>DeleteStock(context.Item))"
+                            StartIcon="@Icons.Material.Filled.Delete" 
+                            Color="Color.Error" />
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+}

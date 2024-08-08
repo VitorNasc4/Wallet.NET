@@ -24,6 +24,8 @@ namespace Wallet.NET.Components.Pages.Stocks
         [Inject]
         public NavigationManager NavigationManager { get; set; } = null!;
 
+        public bool IsLoading { get; set; } = true;
+
         public List<StockViewModel> Stocks { get; set; } = new List<StockViewModel>();
         public async Task DeleteStock(StockViewModel stock)
         {
@@ -102,6 +104,7 @@ namespace Wallet.NET.Components.Pages.Stocks
                 }
 
                 Stocks = stockViewModelList;
+                IsLoading = false;
             }
             catch (Exception ex)
             {

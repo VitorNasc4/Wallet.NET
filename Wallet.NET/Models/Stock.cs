@@ -28,6 +28,11 @@
     {
         public static string BOVESPA = "BOVESPA";
         public static string NASDAQ = "NASDAQ";
+
+        public static List<string> GetAllExchanges()
+        {
+            return new List<string> { BOVESPA, NASDAQ };
+        }
     }
 }
 

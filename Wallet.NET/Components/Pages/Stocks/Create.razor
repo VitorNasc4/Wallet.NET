@@ -1,5 +1,6 @@
 @page "/stocks/create"
 @using Microsoft.AspNetCore.Authorization
+@using Wallet.NET.Models
 @inherits CreateStockPage
 @attribute [Authorize(Roles = "User")]
 
@@ -12,8 +13,13 @@
     <MudTextField Label="Ticker" Variant="Variant.Outlined" HelperText="Field required" @bind-Value="InputModel.Ticker"
       For="@(()=>InputModel.Ticker)" />
 
-    <MudTextField Label="Exchange" Variant="Variant.Outlined" HelperText="Field required"
-      @bind-Value="InputModel.Exchange" For="@(()=>InputModel.Exchange)" />
+    <MudSelect Label="Exchange" Variant="Variant.Outlined" HelperText="Field required"
+      @bind-Value="InputModel.Exchange" For="@(()=>InputModel.Exchange)">
+      @foreach (var exchange in ExchangeTypes.GetAllExchanges())
+      {
+          <MudSelectItem Value="@exchange">@exchange</MudSelectItem>
+      }
+    </MudSelect>
 
     <MudDivider Class="m-4" />
 
