@@ -20,6 +20,7 @@ namespace Wallet.NET.Services.Email
     {
         public async Task SendEmail(NotificationInfoDTO notificationInfoDTO)
         {
+            // Create environment variables with the email information
             var email = Environment.GetEnvironmentVariable("OUT_EMAIL");
             var pass = Environment.GetEnvironmentVariable("OUT_PASS");
 
